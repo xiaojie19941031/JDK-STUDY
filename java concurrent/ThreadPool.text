@@ -74,35 +74,35 @@ ThreadPoolExecutor
         		3、判断当前线程池中的工作线程数是否达到了maximumPoolSize,未达到创建非核心线程执行任务,否则根据饱和策略处理
 
        		public void execute(Runnable command) {
-        		
+
         		if (command == null){
-            		throw new NullPointerException();
+            		  throw new NullPointerException();
         		}
        			// 这个值包含了线程池的状态以及当前线程池中工作线程的个数
         		int c = ctl.get();
         		// 如果工作线程数 < 核心线程数
         		if (workerCountOf(c) < corePoolSize) {
         			// 新建一个工作线程来运行任务,如果成功了,则直接返回[此过程会获取全局锁会消耗性能,因此线程池有个优化点,可以预热线程池]
-            		if (addWorker(command, true)){
-                		return;
-            		}
-            		c = ctl.get();
+            		  if (addWorker(command, true)){
+                		  return;
+            		  }
+            		  c = ctl.get();
         		}
         		// RUNNING状态,则尝试把任务添加到任务队列
         		if (isRunning(c) && workQueue.offer(command)) {
-            		int recheck = ctl.get();
-            		//如果线程池已经不是RUNNING状态了,把任务从队列中移除,并执行拒绝任务策略
-            		if (!isRunning(recheck) && remove(command)){
-                		reject(command);
-            		}
-            		// 如果工作线程数为0,就添加一个新的工作线程,因为旧线程可能已经被回收了,所以工作线程数可能为0
-            		else if (workerCountOf(recheck) == 0){
-                		addWorker(null, false);
-            		}
+            		  int recheck = ctl.get();
+            		  //如果线程池已经不是RUNNING状态了,把任务从队列中移除,并执行拒绝任务策略
+            		  if (!isRunning(recheck) && remove(command)){
+                		  reject(command);
+            		  }
+            		  // 如果工作线程数为0,就添加一个新的工作线程,因为旧线程可能已经被回收了,所以工作线程数可能为0
+            		  else if (workerCountOf(recheck) == 0){
+                		  addWorker(null, false);
+            		  }
         		}
         		// 创建非核心线程来执行任务
         		else if (!addWorker(command, false)){
-            		reject(command);
+            		  reject(command);
         		}
           	}
 
@@ -120,28 +120,28 @@ ThreadPoolExecutor
         		retry:
         		// 无限循环
         		for (;;) {
-        			// 这个值包含了线程池的状态以及当前线程池中工作线程的个数
-            		int c = ctl.get();
-            		// 获取线程池的状态值
-            		int rs = runStateOf(c);
-            		if (rs >= SHUTDOWN && !(rs == SHUTDOWN && firstTask == null && !workQueue.isEmpty())){
-                		return false;
-            		}
-            		for (;;) {
-            			// 获取工作线程的数量
-                		int wc = workerCountOf(c);
-                		// 代表线程已经超标了
-                		if (wc >= CAPACITY || wc >= (core ? corePoolSize : maximumPoolSize)){
-                    		return false;
-                		}
-                    	// 如果原子性增加工作线程数(+1)成功,代表创建线程成功
-                		if (compareAndIncrementWorkerCount(c)){
-                    		break retry;
-                		}
-                		c = ctl.get();
-                		if (runStateOf(c) != rs){
-                    		continue retry;
-                		}
+        			  // 这个值包含了线程池的状态以及当前线程池中工作线程的个数
+            		  int c = ctl.get();
+            		  // 获取线程池的状态值
+            		  int rs = runStateOf(c);
+            		  if (rs >= SHUTDOWN && !(rs == SHUTDOWN && firstTask == null && !workQueue.isEmpty())){
+                		  return false;
+            		  }
+            		  for (;;) {
+            			  // 获取工作线程的数量
+                		  int wc = workerCountOf(c);
+                		  // 代表线程已经超标了
+                		  if (wc >= CAPACITY || wc >= (core ? corePoolSize : maximumPoolSize)){
+                    		  return false;
+                		  }
+                    	  // 如果原子性增加工作线程数(+1)成功,代表创建线程成功
+                		  if (compareAndIncrementWorkerCount(c)){
+                    		  break retry;
+                		  }
+                		  c = ctl.get();
+                		  if (runStateOf(c) != rs){
+                    		  continue retry;
+                		  }
             		}
         		}
 
