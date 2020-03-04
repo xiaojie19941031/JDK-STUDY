@@ -1,9 +1,9 @@
-# LinkedBlockingQueue[FIFO,先进先出]
-基于链表实现的阻塞队列,在未指定具体容量的情况下,此队列为无界队列[实际使用中最好指定容量避免造成内存泄露],内部定义了两把锁并根据不同的锁定义了两个Condition[可以理解为等待队列]用于线程之间的协作[等待/通知模式]
+# LinkedBlockingQueue
+基于链表实现的阻塞队列,在未指定具体容量的情况下,此队列为无界队列[实际使用中最好指定容量避免造成内存泄露],内部使用了可重入锁以及Condition[可以理解为条件队列,等待/通知模式]
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;putLock:用于往队列中存放元素时需要获取 -------->	notFull:代表队列里元素未存满可以进行入队操作
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;putLock:入队时获取 -------->	notFull:代表队列里元素未存满可以进行入队操作
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;takeLock:用于从队列中移出元素时需要获取 -------->	notEmpty:代表队列里存在元素可以去进行移出操作
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;takeLock:出队时获取 -------->	notEmpty:代表队列里存在元素可以去进行移出操作
 
 入队操作
 
@@ -53,7 +53,7 @@ public void put(E e) throws InterruptedException {
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offer(E e):和put操作相似,只是当队列满时不阻塞直接返回false
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offer(E e,long timeout,TimeUnit unit):在offer(E e)基础上添加了超时操作,当队列满时阻塞timeout时间,如果超过timeout没被唤醒直接返回false
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;offer(E e,long timeout,TimeUnit unit):在offer(E e)基础上添加了超时操作,当队列满时阻塞timeout时间,如果超过timeout没被唤醒线程直接自动取消
 
 出队操作
 
@@ -101,8 +101,8 @@ public E take() throws InterruptedException {
 ```
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;poll():和take操作相似,只是当队列为空时不阻塞直接返回null
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;poll(long timeout,TimeUnit unit):在poll()基础上添加了超时操作,当队列为空时阻塞timeout,如果超过timeout没被唤醒直接返回null
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;poll(long timeout,TimeUnit unit):在poll()基础上添加了超时操作,当队列为空时阻塞timeout,如果超过timeout没被唤醒线程直接自动取消
 
 设计优点
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过入队和出队分为两个锁和两个等待队列,这样出队入队不用去争夺同一把锁,这样吞吐量有很大的提升
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;内部通过两把锁分别控制出队和入队,入队和出队不用同时争夺一把锁,这样可以大大的提高吞吐量
