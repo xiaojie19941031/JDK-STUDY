@@ -48,6 +48,8 @@ Worker:内部存放执行任务的线程以及任务[真正执行任务]
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PriorityBlockingQueue:优先级阻塞队列
 
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;还有很多拓展的队列,在JCTools中可以学习
+
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;threadFactory:用于设置创建线程的工厂
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RejectedExecutionHandler:饱和策略,当线程池中的线程数超过线程池最大数量执行的拒绝策略
@@ -254,6 +256,3 @@ final void runWorker(Worker w) {
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4、ScheduledThreadPoolExecutor:定时线程池,特点可以定时让线程执行任务
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5、WorkStealingPool:窃取式、抢占式线程池,特点通过线程并行实现,此线程不能保证任务的顺序执行
-
-
-
