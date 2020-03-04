@@ -1,4 +1,4 @@
-LinkedBlockingQueue
+LinkedBlockingQueue[FIFO,先进先出]
 
 	基于链表实现的阻塞队列,在未指定具体容量的情况下,此队列为无界队列[实际使用中最好指定容量避免造成内存泄露],内部定义了两把锁并根据不同的锁定义了两个Condition[可以理解为等待队列]用于线程之间的协作[等待/通知模式]
 
@@ -30,6 +30,7 @@ LinkedBlockingQueue
         			// 获取putLock
         			final ReentrantLock putLock = this.putLock;
         			final AtomicInteger count = this.count;
+        			// 可以响应中断
         			putLock.lockInterruptibly();
         			try {
         				// 当队列满时,入队线程阻塞在notFull上
@@ -75,6 +76,7 @@ LinkedBlockingQueue
         			final AtomicInteger count = this.count;
         			// 获取takeLock
         			final ReentrantLock takeLock = this.takeLock;
+        			// 可以响应中断
         			takeLock.lockInterruptibly();
         			try {
         				// 如果队列为空,阻塞当前的出队线程
