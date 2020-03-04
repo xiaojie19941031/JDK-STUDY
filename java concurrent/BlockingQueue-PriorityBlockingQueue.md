@@ -1,0 +1,2 @@
+# PriorityBlockingQueue[优先级队列]
+基于二叉堆实现的优先级无界阻塞队列,默认情况下采用升序,也可以通过Comparator比较接口进行比较[只保存实现了Comparable接口的元素]
