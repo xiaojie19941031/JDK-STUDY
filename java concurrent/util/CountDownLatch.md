@@ -1,9 +1,15 @@
 # CountDownLatch
-并发工具类,允许一个或多个线程等待其它线程完成操作,通过计数器实现,初始值为需要等待多少次countDown操作,每当一个countDown完成后计数器值-1,当计数器值为0是表示需要等待的线程全部执行完成,此时在闭锁上等待的线程可以执行,实现依赖AQS
+定义
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;并发工具类,允许一个或多个线程等待其它线程完成操作,通过计数器实现,初始值为需要等待多少次countDown操作,每当一个countDown完成后计数器值-1,当计数器值为0是表示需要等待的线程全部执行完成,此时在闭锁上等待的线程可以执行
+
+内部通过AQS实现
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sync:继承自AQS
 
 构造方法
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;传入一个int类型数字代表需要等待多少线程,内部生成Sync[Sync继承自AQS]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;传入一个int类型数字代表需要等待多少线程
 
 ```
 public CountDownLatch(int count) {
@@ -12,7 +18,7 @@ public CountDownLatch(int count) {
 }
 ```
 
-await():调用此方法线程会被挂起,直到计数器为0是才会继续执行[这里只看判断条件,真正的阻塞流程是通过AQS实现的]
+await():调用此方法线程会被挂起,直到计数器为0是才会继续执行
 ```
 public void await() throws InterruptedException {
     sync.acquireSharedInterruptibly(1);
