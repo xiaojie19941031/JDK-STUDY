@@ -1,4 +1,4 @@
-# ThreadPoolExecutor[线程池]
+# ThreadPoolExecutor
 
 Worker:内部存放执行任务的线程以及任务[真正执行任务]
 
