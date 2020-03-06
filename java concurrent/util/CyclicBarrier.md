@@ -3,7 +3,9 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;并发工具类,让一组线程达到一个屏障(同步点)时被阻塞,直到最后一个线程也到达屏障时屏障会打开,此时阻塞在此屏障上的线程可以继续运行[线程之间相互等待]
 
-内部通过ReentrantLock和Condition配合实现
+内部实现
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;通过ReentrantLock[可重入锁]和Condition[条件队列]配合实现
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;lock:全局锁,执行操作需要获取锁
 
@@ -15,7 +17,7 @@
 
 应用场景
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;多线程计算数据,最后进行数据合并[相关结果合并的操作都可以使用]
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;多线程计算数据,最后进行数据合并[相关结果合并的操作都可以使用],比如分多线程分批次计算最后将每个线程分批后的结果进行一次合并
 
 构造方法
 
@@ -23,7 +25,17 @@
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CyclicBarrier(int parties):通过指定需要达到同步点的线程数构造
 
-await():阻塞线程,如果此时线程全部到达同步点则唤醒阻塞的线程继续执行
+核心方法
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await():阻塞线程,如果此时线程全部到达同步点则唤醒阻塞的线程继续执行
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;原理
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、获取全局锁,判断内部状态机的状态,如果状态不正常抛出异常否则判断当前线程是否被中断,中断先改变状态机再抛出异常否则下一步
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、将内部需要达到同步点的数量进行减1操作,如果此时值为不为0,线程直接阻塞,否则进入下一步
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3、判断当前的barrierCommand是否存在,存在先执行此方法,唤醒阻塞中的线程并重置状态机以及需要达到同步点的数量值
 ```
 public int await() throws InterruptedException, BrokenBarrierException {
     
@@ -117,9 +129,15 @@ private void nextGeneration() {
     generation = new Generation();
 }
 ```
-await(long timeout, TimeUnit unit):在await的基础上增加了超时机制,如果此时线程全部到达同步点则唤醒阻塞的线程继续执行,如果超时会抛出超时异常并且唤醒其它线程
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;await(long timeout, TimeUnit unit):在await的基础上增加了超时机制,如果此时线程全部到达同步点则唤醒阻塞的线程继续执行,如果超时会抛出超时异常并且唤醒其它线程
 
-reset():重置CyclicBarrier
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reset():重置CyclicBarrier
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;原理
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1、获取全局锁,先摧毁状态机,继续下一步
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2、唤醒阻塞中的线程并重置状态机以及需要达到同步点的数量值
 ```
 public void reset() {
 
